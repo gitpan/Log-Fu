@@ -4,4 +4,6 @@ Makefile.PL
 README
 lib/Log/Fu.pm
 t/00-load.t
+t/01-functionality.t
 t/manifest.t
+META.yml                                 Module meta-data (added by MakeMaker)

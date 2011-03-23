@@ -1,24 +1,43 @@
 #!/usr/bin/perl
 package Log::Fu;
+use strict;
+use warnings;
+
 BEGIN {
+	no strict "refs";
 	my @_strlevels;
 	sub LEVELS() { qw(debug info warn err crit) }
 	my $i = 0;
 	foreach my $c (LEVELS) {
-		$i++;
 		*{ "LOG_" . uc($c) } = sub() { $i };
 		$_strlevels[$i] = $c;
+		$i++;
 	}
 	sub _strlevel { $_strlevels[$_[0]] }
+	
+	my @_syslog_levels = map {
+		if ($_ eq 'warn') {
+			"WARNING";
+		} else {
+			uc($_)
+		} } @_strlevels;
+	sub _syslog_level { $_syslog_levels[$_[0]]}
+	#warn is not quite the same as WARNING
 }
-use strict;
-use warnings;
-use base qw(Exporter);
 
-our @EXPORT = map "log_" . ($_), LEVELS;
-our $VERSION = 0.02;
+use base qw(Exporter);
+use Sys::Syslog;
+
+our @EXPORT = (map("log_" . ($_), LEVELS));
+our @EXPORT_OK = qw(set_log_level);
+
+our $VERSION = 0.04;
 our $SHUSH = 0;
 our $LINE_PREFIX = "";
+
+my $ENABLE_SYSLOG;
+my $SYSLOG_FACILITY;
+my $SYSLOG_STDERR_ECHO = 0; 
 
 use Data::Dumper;
 use File::Basename qw(basename);
@@ -87,19 +106,55 @@ sub _logger {
 		$msg =~ s/^(.)/$LINE_PREFIX $1/gm;
 	}
 	print $outfile $msg;
+	if ($ENABLE_SYSLOG) {
+		syslog(_syslog_level($level_number), $msg);
+	}
 }
 
 foreach my $level (LEVELS) {
+	#Plain wrappers
 	my $fn_name = "log_$level";
 	no strict "refs";
 	my $const = &{uc("LOG_" . $level)};
 	*{ $fn_name } = sub {
 		_logger($const, uc($level), 1, @_)
 	};
+	
+	#Offset wrappers
 	*{ $fn_name . "_with_offset" } = sub {
 		_logger($const, uc($level), 1 + shift, @_);
 	};
+	
+	#format string wrappers
+	*{ $fn_name . "f" } = sub {
+		_logger($const, uc($level), 1, sprintf(@_))
+	};
+	
 	use strict "refs";
+}
+
+#From 0.03
+sub set_log_level {
+	my ($pkgname,$level) = @_;
+	$level = eval("LOG_".uc($level));
+	return if !defined $level;
+	return if !exists $sources{$pkgname};
+	$sources{$pkgname}->{level} = $level;
+	return 1;
+}
+
+#From 0.04
+sub start_syslog {
+	#Take standard openlog options,
+	my $ok = openlog(@_);
+	$ENABLE_SYSLOG = 1 if $ok;
+	return $ok;
+}
+
+sub stop_syslog {
+	my $ok = closelog();
+	$ENABLE_SYSLOG = 0 if $ok;
+	return $ok;
 }
 
 1;
@@ -146,6 +201,7 @@ do its thing.
 
 logs a message to the target specified at import with $LEVEL priority
 
+
 =item $SHUSH
 
 Set this to a true value to silence all logging output
@@ -162,6 +218,19 @@ These functions are subject to change and should not be used often. However
 they may be helpful in controlling logging when absolutely necessary
 
 =over
+
+=item Log::Fu::set_log_level($pkgname, $levelstr)
+
+Sets $pkgname's logging level to $levelstr. $levelstr is one of err, debug, info,
+warn, crit etc.
+
+=item Log::Fu::start_syslog(@params)
+
+Enables logging to syslog. @params are the options passed to L<Sys::Syslog/openlog>
+
+=item Log::Fu::stop_syslog()
+
+Stops logging to syslog
 
 =item _logger($numeric_level_constant, $level_display, $stack_offset, @messages)
 
