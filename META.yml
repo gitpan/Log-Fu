@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Log-Fu
-version:            0.04
+version:            0.05
 abstract:           Simple logging module and interface with absolutely no required boilerplate
 author:
     - M. Nunberg <mnunberg@haskalah.org>
