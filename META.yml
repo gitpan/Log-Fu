@@ -1,7 +1,7 @@
 --- #YAML:1.0
 name:               Log-Fu
-version:            0.05
-abstract:           Simple logging module and interface with absolutely no required boilerplate
+version:            0.10
+abstract:           Simple logging module and interface with absolutely no required boilerplate - Now in COLOR!
 author:
     - M. Nunberg <mnunberg@haskalah.org>
 license:            perl
@@ -11,13 +11,14 @@ configure_requires:
 build_requires:
     ExtUtils::MakeMaker:  0
 requires:
-    IO::String:  0
-    Test::More:  0
+    IO::String:      0
+    Term::Terminfo:  0
+    Test::More:      0
 no_index:
     directory:
         - t
         - inc
-generated_by:       ExtUtils::MakeMaker version 6.56
+generated_by:       ExtUtils::MakeMaker version 6.55_02
 meta-spec:
     url:      http://module-build.sourceforge.net/META-spec-v1.4.html
     version:  1.4
