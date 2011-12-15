@@ -2,8 +2,13 @@ Changes
 MANIFEST
 Makefile.PL
 README
+
 lib/Log/Fu.pm
-t/00-load.t
+lib/Log/Fu/Color.pm
+lib/Log/Fu/Common.pm
+lib/Log/Fu/Chomp.pm
+
 t/01-functionality.t
-t/manifest.t
-META.yml                                 Module meta-data (added by MakeMaker)
+t/02-shorten.t
+META.yml                                 Module YAML meta-data (added by MakeMaker)
+META.json                                Module JSON meta-data (added by MakeMaker)
