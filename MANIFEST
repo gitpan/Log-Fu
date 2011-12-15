@@ -10,5 +10,6 @@ lib/Log/Fu/Chomp.pm
 
 t/01-functionality.t
 t/02-shorten.t
+t/lf_out_test.pm
 META.yml                                 Module YAML meta-data (added by MakeMaker)
 META.json                                Module JSON meta-data (added by MakeMaker)
