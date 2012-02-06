@@ -1,5 +1,6 @@
 Changes
 MANIFEST
+MANIFEST.SKIP
 Makefile.PL
 README
 
@@ -11,6 +12,8 @@ lib/Log/Fu/Chomp.pm
 t/01-functionality.t
 t/02-shorten.t
 t/03-severity_display.t
+t/04-elog.t
+t/05-misc.t
 t/lf_out_test.pm
 
 META.yml                                 Module YAML meta-data (added by MakeMaker)
