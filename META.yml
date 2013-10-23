@@ -23,4 +23,4 @@ requires:
   Constant::Generate: 0.04
   Dir::Self: 0
   Test::More: 0
-version: 0.30
+version: 0.31
